@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>コメントといいね機能</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        .comment-section {
+            width: 50%;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        #comment-form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        #comment-input {
+            width: 100%;
+            height: 100px;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        #comment-form button {
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            background-color: #007BFF;
+            color: white;
+            cursor: pointer;
+        }
+
+        #comment-form button:hover {
+            background-color: #0056b3;
+        }
+
+        .comment {
+            border-bottom: 1px solid #ddd;
+            padding: 10px 0;
+        }
+
+        .comment p {
+            margin: 5px 0;
+        }
+
+        .reply {
+            margin-left: 20px;
+            border-left: 2px solid #ddd;
+            padding-left: 10px;
+        }
+
+        .like-button {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+
+        .like-button:hover {
+            background-color: #0056b3;
+        }
+
+        .like-button:disabled {
+            background-color: #ddd;
+            cursor: not-allowed;
+        }
+
+        .reply-button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 5px 10px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+
+        .reply-button:hover {
+            background-color: #218838;
+        }
+
+        .reply-form {
+            display: none;
+            flex-direction: column;
+            margin-top: 10px;
+        }
+
+        .reply-input {
+            width: 90%;
+            height: 50px;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .reply-form button {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 5px;
+            background-color: #007BFF;
+            color: white;
+            cursor: pointer;
+        }
+
+        .reply-form button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="comment-section">
+        <h1>コメントセクション</h1>
+        <form id="comment-form">
+            <textarea id="comment-input" placeholder="コメントを入力してください..." required></textarea>
+            <button type="submit">コメントを投稿する</button>
+        </form>
+        <div id="comments-container"></div>
+    </div>
+    <script>
+        document.getElementById('comment-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            const commentInput = document.getElementById('comment-input');
+            const commentText = commentInput.value;
+            commentInput.value = '';
+
+            addComment(commentText);
+        });
+
+        function addComment(text, parentContainer = document.getElementById('comments-container')) {
+            const commentContainer = document.createElement('div');
+            commentContainer.className = 'comment';
+
+            const commentPara = document.createElement('p');
+            commentPara.textContent = text;
+
+            const likeButton = document.createElement('button');
+            likeButton.textContent = 'いいね (0)';
+            likeButton.className = 'like-button';
+            likeButton.addEventListener('click', function() {
+                const likesCount = likeButton.textContent.match(/\d+/);
+                const currentLikes = likesCount ? parseInt(likesCount[0]) : 0;
+                likeButton.textContent = `いいね (${currentLikes + 1})`;
+                likeButton.disabled = true;
+            });
+
+            const replyButton = document.createElement('button');
+            replyButton.textContent = '返信';
+            replyButton.className = 'reply-button';
+            replyButton.addEventListener('click', function() {
+                replyForm.style.display = 'flex';
+            });
+
+            const replyForm = document.createElement('form');
+            replyForm.className = 'reply-form';
+            const replyInput = document.createElement('textarea');
+            replyInput.className = 'reply-input';
+            replyInput.placeholder = '返信を入力してください...';
+            const replySubmit = document.createElement('button');
+            replySubmit.textContent = '返信を投稿する';
+            replyForm.appendChild(replyInput);
+            replyForm.appendChild(replySubmit);
+
+            replyForm.addEventListener('submit', function(event) {
+                event.preventDefault();
+                const replyText = replyInput.value;
+                replyInput.value = '';
+                replyForm.style.display = 'none';
+                addComment(replyText, replyContainer);
+            });
+
+            const replyContainer = document.createElement('div');
+            replyContainer.className = 'reply';
+
+            commentContainer.appendChild(commentPara);
+            commentContainer.appendChild(likeButton);
+            commentContainer.appendChild(replyButton);
+            commentContainer.appendChild(replyForm);
+            commentContainer.appendChild(replyContainer);
+
+            parentContainer.appendChild(commentContainer);
+        }
+    </script>
+</body>
+</html>
